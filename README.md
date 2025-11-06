@@ -185,6 +185,53 @@ curl -X POST "http://localhost:8000/vault-accounts" \
 }
 ```
 
+### Create Vault Wallet
+
+```
+POST /vault-wallets
+```
+
+Creates a new wallet/asset in a vault account.
+
+**Request Body:**
+```json
+{
+  "vault_account_id": "0",
+  "asset_id": "ETH"
+}
+```
+
+**Parameters:**
+- `vault_account_id` (string, required): The ID of the vault account
+- `asset_id` (string, required): The asset/blockchain identifier (e.g., BTC, ETH, SOL, MATIC)
+
+**Example:**
+```bash
+curl -X POST "http://localhost:8000/vault-wallets" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vault_account_id": "0",
+    "asset_id": "ETH"
+  }'
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "0",
+  "address": "0x1234567890abcdef1234567890abcdef12345678",
+  "legacy_address": null,
+  "tag": null
+}
+```
+
+**Error Response (500):**
+```json
+{
+  "detail": "Failed to create vault wallet: <error message>"
+}
+```
+
 ## Configuration
 
 ### Environment Variables

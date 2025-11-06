@@ -23,6 +23,25 @@ class VaultAccountResponse(BaseModel):
         from_attributes = True
 
 
+class CreateVaultWalletRequest(BaseModel):
+    """Request model for creating a vault wallet"""
+
+    vault_account_id: str = Field(..., description="The ID of the vault account", min_length=1)
+    asset_id: str = Field(..., description="The asset ID (e.g., BTC, ETH, SOL)", min_length=1)
+
+
+class VaultWalletResponse(BaseModel):
+    """Response model for vault wallet operations"""
+
+    id: str = Field(..., description="The vault account ID")
+    address: Optional[str] = Field(None, description="The wallet address")
+    legacy_address: Optional[str] = Field(None, description="Legacy format address (for applicable blockchains)")
+    tag: Optional[str] = Field(None, description="Tag/memo field (for applicable assets)")
+
+    class Config:
+        from_attributes = True
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
 

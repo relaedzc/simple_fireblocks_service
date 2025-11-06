@@ -5,7 +5,8 @@ from fastapi.responses import JSONResponse
 
 from app.config import config
 from app.fireblocks_client import FireblocksClientManager
-from app.routes import vault_accounts
+from app.fireblocks_sdk_client import FireblocksSDKClientManager
+from app.routes import vault_accounts, vault_wallets
 
 
 @asynccontextmanager
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     FireblocksClientManager.close_client()
+    FireblocksSDKClientManager.close_client()
     print("Fireblocks service stopped")
 
 
@@ -37,6 +39,7 @@ app = FastAPI(
 
 # Include routers
 app.include_router(vault_accounts.router)
+app.include_router(vault_wallets.router)
 
 
 @app.get("/", tags=["Health"])
