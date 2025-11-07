@@ -4,13 +4,17 @@ An internal FastAPI service for managing Fireblocks operations with secure crede
 
 ## Overview
 
-This service provides a REST API interface to Fireblocks, allowing you to keep your Fireblocks API credentials secure on a single server. The service is designed for internal use within your infrastructure.
+This service provides a REST API interface to Fireblocks, allowing you to keep your Fireblocks API credentials secure on a single server. The service is designed for internal use within your infrastructure and supports the complete workflow: create vault accounts, add wallets, check balances, and execute transfers.
 
 ## Features
 
 - Secure credential management (API key and secret key file separation)
 - RESTful API for Fireblocks operations
 - Vault account creation and management
+- Vault wallet/asset creation
+- Asset balance retrieval
+- Transaction creation (vault-to-vault transfers)
+- Dual SDK support (py-sdk and fireblocks-sdk-py)
 - Automatic API documentation (Swagger UI and ReDoc)
 - Production-ready Fireblocks configuration
 - Health check endpoints
@@ -22,14 +26,18 @@ This service provides a REST API interface to Fireblocks, allowing you to keep y
 fireblocks_service/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py                 # FastAPI application entry point
-│   ├── config.py               # Configuration management
-│   ├── fireblocks_client.py    # Fireblocks client singleton
-│   ├── models.py               # Pydantic request/response models
+│   ├── main.py                    # FastAPI application entry point
+│   ├── config.py                  # Configuration management
+│   ├── fireblocks_client.py       # Fireblocks py-sdk client (for vault accounts)
+│   ├── fireblocks_sdk_client.py   # Fireblocks SDK client (for wallets/assets/transactions)
+│   ├── models.py                  # Pydantic request/response models
 │   └── routes/
 │       ├── __init__.py
-│       └── vault_accounts.py   # Vault account endpoints
-├── .env.example                # Environment variables template
+│       ├── vault_accounts.py      # Vault account endpoints
+│       ├── vault_wallets.py       # Vault wallet endpoints
+│       ├── vault_assets.py        # Vault asset balance endpoints
+│       └── transactions.py        # Transaction endpoints
+├── .env.example                   # Environment variables template
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -355,13 +363,19 @@ curl -X POST "http://localhost:8000/transactions" \
 | `FIREBLOCKS_API_KEY` | Your Fireblocks API key | Yes |
 | `FIREBLOCKS_SECRET_KEY_PATH` | Path to your Fireblocks secret key file (.key) | Yes |
 
-### Fireblocks Environment
+### Fireblocks SDKs
 
-The service is configured to use the **Fireblocks Production (US)** environment by default. This is set in `app/fireblocks_client.py`:
+The service uses two Fireblocks SDK libraries in parallel:
 
-```python
-base_path=BasePath.US  # Production environment
-```
+1. **fireblocks** (py-sdk v12.1.2) - Used for vault account operations
+   - Configured with `BasePath.US` for production (US environment)
+   - See `app/fireblocks_client.py`
+
+2. **fireblocks-sdk** (fireblocks-sdk-py v2.17.0) - Used for wallets, assets, and transactions
+   - Automatically connects to production environment
+   - See `app/fireblocks_sdk_client.py`
+
+Both SDKs use the same API credentials from your `.env` file.
 
 ## Security Notes
 
