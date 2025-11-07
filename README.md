@@ -272,6 +272,80 @@ curl http://localhost:8000/vault-assets/0/ETH
 }
 ```
 
+### Create Transaction
+
+```
+POST /transactions
+```
+
+Creates a new transfer transaction between vault accounts.
+
+**Request Body:**
+```json
+{
+  "asset_id": "ETH",
+  "source_vault_account_id": "0",
+  "destination_vault_account_id": "1",
+  "amount": "0.5",
+  "note": "Test transfer",
+  "fee_level": "MEDIUM"
+}
+```
+
+**Parameters:**
+- `asset_id` (string, required): The asset ID to transfer (e.g., BTC, ETH, SOL, MATIC)
+- `source_vault_account_id` (string, required): Source vault account ID
+- `destination_vault_account_id` (string, required): Destination vault account ID
+- `amount` (string, required): Amount to transfer
+- `note` (string, optional): Transaction note
+- `fee_level` (string, optional): Fee level - HIGH, MEDIUM, or LOW
+
+**Example:**
+```bash
+curl -X POST "http://localhost:8000/transactions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "asset_id": "ETH",
+    "source_vault_account_id": "0",
+    "destination_vault_account_id": "1",
+    "amount": "0.5",
+    "note": "Transfer to account 1",
+    "fee_level": "MEDIUM"
+  }'
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "status": "SUBMITTED",
+  "asset_id": "ETH",
+  "amount": "0.5",
+  "source": {
+    "type": "VAULT_ACCOUNT",
+    "id": "0"
+  },
+  "destination": {
+    "type": "VAULT_ACCOUNT",
+    "id": "1"
+  },
+  "fee": null,
+  "network_fee": null,
+  "created_at": 1699999999,
+  "last_updated": 1699999999,
+  "tx_hash": null,
+  "sub_status": "PENDING_SIGNATURE",
+  "additional_data": {}
+}
+```
+
+**Error Response (500):**
+```json
+{
+  "detail": "Failed to create transaction: <error message>"
+}
+```
+
 ## Configuration
 
 ### Environment Variables

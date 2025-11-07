@@ -61,6 +61,39 @@ class VaultAssetResponse(BaseModel):
         from_attributes = True
 
 
+class CreateTransactionRequest(BaseModel):
+    """Request model for creating a transaction"""
+
+    asset_id: str = Field(..., description="The asset ID (e.g., BTC, ETH, SOL)", min_length=1)
+    source_vault_account_id: str = Field(..., description="Source vault account ID", min_length=1)
+    destination_vault_account_id: str = Field(..., description="Destination vault account ID", min_length=1)
+    amount: str = Field(..., description="Transfer amount", min_length=1)
+    note: Optional[str] = Field(None, description="Transaction note")
+    fee_level: Optional[str] = Field(None, description="Fee level: HIGH, MEDIUM, or LOW")
+
+
+class TransactionResponse(BaseModel):
+    """Response model for transaction operations"""
+
+    id: str = Field(..., description="Transaction ID")
+    status: str = Field(..., description="Transaction status")
+    asset_id: Optional[str] = Field(None, description="Asset ID")
+    amount: Optional[str] = Field(None, description="Transaction amount")
+    source: Optional[Dict[str, Any]] = Field(None, description="Source details")
+    destination: Optional[Dict[str, Any]] = Field(None, description="Destination details")
+    fee: Optional[str] = Field(None, description="Transaction fee")
+    network_fee: Optional[str] = Field(None, description="Network fee")
+    created_at: Optional[int] = Field(None, description="Creation timestamp")
+    last_updated: Optional[int] = Field(None, description="Last update timestamp")
+    tx_hash: Optional[str] = Field(None, description="Transaction hash")
+    sub_status: Optional[str] = Field(None, description="Transaction sub-status")
+    # Store any additional fields
+    additional_data: Optional[Dict[str, Any]] = Field(None, description="Additional transaction data")
+
+    class Config:
+        from_attributes = True
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
 

@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from app.config import config
 from app.fireblocks_client import FireblocksClientManager
 from app.fireblocks_sdk_client import FireblocksSDKClientManager
-from app.routes import vault_accounts, vault_wallets, vault_assets
+from app.routes import vault_accounts, vault_wallets, vault_assets, transactions
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ app = FastAPI(
 app.include_router(vault_accounts.router)
 app.include_router(vault_wallets.router)
 app.include_router(vault_assets.router)
+app.include_router(transactions.router)
 
 
 @app.get("/", tags=["Health"])
