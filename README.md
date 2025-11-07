@@ -232,6 +232,46 @@ curl -X POST "http://localhost:8000/vault-wallets" \
 }
 ```
 
+### Get Vault Account Asset
+
+```
+GET /vault-assets/{vault_account_id}/{asset_id}
+```
+
+Retrieves balance information for a specific asset in a vault account.
+
+**Path Parameters:**
+- `vault_account_id` (string, required): The ID of the vault account
+- `asset_id` (string, required): The asset/blockchain identifier (e.g., BTC, ETH, SOL, MATIC)
+
+**Example:**
+```bash
+curl http://localhost:8000/vault-assets/0/ETH
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "ETH",
+  "total": "1.5",
+  "available": "1.5",
+  "pending": "0",
+  "frozen": "0",
+  "locked_amount": "0",
+  "staked": "0",
+  "block_height": "12345678",
+  "block_hash": "0xabc123...",
+  "additional_data": {}
+}
+```
+
+**Error Response (500):**
+```json
+{
+  "detail": "Failed to get vault asset: <error message>"
+}
+```
+
 ## Configuration
 
 ### Environment Variables

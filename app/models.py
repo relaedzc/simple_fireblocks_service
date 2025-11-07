@@ -1,5 +1,5 @@
 """Pydantic models for request and response validation"""
-from typing import Optional
+from typing import Optional, Any, Dict
 from pydantic import BaseModel, Field
 
 
@@ -37,6 +37,25 @@ class VaultWalletResponse(BaseModel):
     address: Optional[str] = Field(None, description="The wallet address")
     legacy_address: Optional[str] = Field(None, description="Legacy format address (for applicable blockchains)")
     tag: Optional[str] = Field(None, description="Tag/memo field (for applicable assets)")
+
+    class Config:
+        from_attributes = True
+
+
+class VaultAssetResponse(BaseModel):
+    """Response model for vault asset balance information"""
+
+    id: str = Field(..., description="The asset ID")
+    total: Optional[str] = Field(None, description="Total balance")
+    available: Optional[str] = Field(None, description="Available balance")
+    pending: Optional[str] = Field(None, description="Pending balance")
+    frozen: Optional[str] = Field(None, description="Frozen balance")
+    locked_amount: Optional[str] = Field(None, description="Locked amount")
+    staked: Optional[str] = Field(None, description="Staked balance")
+    block_height: Optional[str] = Field(None, description="Block height")
+    block_hash: Optional[str] = Field(None, description="Block hash")
+    # Store any additional fields that might be returned
+    additional_data: Optional[Dict[str, Any]] = Field(None, description="Additional asset data")
 
     class Config:
         from_attributes = True
