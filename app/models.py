@@ -94,6 +94,58 @@ class TransactionResponse(BaseModel):
         from_attributes = True
 
 
+class ParameterWithValue(BaseModel):
+    """Parameter with value for EVM token deployment"""
+
+    name: str = Field(..., description="Parameter name")
+    type: str = Field(..., description="Parameter type (e.g., 'string', 'uint256')")
+    internal_type: str = Field(..., description="Internal Solidity type")
+    value: Any = Field(..., description="Parameter value (string, int, float, or bool)")
+    description: Optional[str] = Field(None, description="Parameter description")
+
+
+class EVMTokenCreateParams(BaseModel):
+    """Parameters for creating an EVM-based token"""
+
+    contract_id: str = Field(..., description="The contract template ID to deploy", min_length=1)
+    deploy_function_params: Optional[list[ParameterWithValue]] = Field(None, description="Parameters for the contract deployment function")
+
+
+class StellarRippleCreateParams(BaseModel):
+    """Parameters for creating a Stellar or Ripple token"""
+
+    issuer_address: Optional[str] = Field(None, description="The issuer address for the token")
+    symbol: Optional[str] = Field(None, description="The token symbol")
+    name: Optional[str] = Field(None, description="The token name")
+
+
+class CreateTokenRequest(BaseModel):
+    """Request model for issuing a new token"""
+
+    vault_account_id: str = Field(..., description="The vault account ID", min_length=1)
+    asset_id: Optional[str] = Field(None, description="The asset ID")
+    blockchain_id: Optional[str] = Field(None, description="The blockchain ID (e.g., 'ETHEREUM', 'POLYGON')")
+    display_name: Optional[str] = Field(None, description="Display name for the token")
+    # Use a discriminated union approach - one of these should be provided
+    evm_params: Optional[EVMTokenCreateParams] = Field(None, description="Parameters for EVM-based token creation")
+    stellar_ripple_params: Optional[StellarRippleCreateParams] = Field(None, description="Parameters for Stellar/Ripple token creation")
+
+
+class TokenResponse(BaseModel):
+    """Response model for token issuance"""
+
+    id: Optional[str] = Field(None, description="Token ID")
+    status: Optional[str] = Field(None, description="Token status (PENDING or SUCCESS)")
+    asset_id: Optional[str] = Field(None, description="Asset ID")
+    blockchain_id: Optional[str] = Field(None, description="Blockchain ID")
+    vault_account_id: Optional[str] = Field(None, description="Vault account ID")
+    # Store any additional fields that might be returned
+    additional_data: Optional[Dict[str, Any]] = Field(None, description="Additional token data")
+
+    class Config:
+        from_attributes = True
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
 
