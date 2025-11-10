@@ -11,6 +11,31 @@ class CreateVaultAccountRequest(BaseModel):
     auto_fuel: bool = Field(False, description="Whether to enable automatic fueling for the vault account")
 
 
+class VaultAssetInAccount(BaseModel):
+    """Asset information within a vault account"""
+
+    id: str = Field(..., description="The asset ID")
+    total: Optional[str] = Field(None, description="Total balance")
+    balance: Optional[str] = Field(None, description="Balance")
+    available: Optional[str] = Field(None, description="Available balance")
+    pending: Optional[str] = Field(None, description="Pending balance")
+    frozen: Optional[str] = Field(None, description="Frozen balance")
+    locked_amount: Optional[str] = Field(None, description="Locked amount")
+    staked: Optional[str] = Field(None, description="Staked balance")
+    total_staked_cpu: Optional[str] = Field(None, description="Total staked CPU")
+    total_staked_network: Optional[str] = Field(None, description="Total staked network")
+    self_staked_cpu: Optional[str] = Field(None, description="Self staked CPU")
+    self_staked_network: Optional[str] = Field(None, description="Self staked network")
+    pending_refund_cpu: Optional[str] = Field(None, description="Pending refund CPU")
+    pending_refund_network: Optional[str] = Field(None, description="Pending refund network")
+    block_height: Optional[str] = Field(None, description="Block height")
+    block_hash: Optional[str] = Field(None, description="Block hash")
+    rewards_info: Optional[Dict[str, Any]] = Field(None, description="Rewards information")
+
+    class Config:
+        from_attributes = True
+
+
 class VaultAccountResponse(BaseModel):
     """Response model for vault account operations"""
 
@@ -18,6 +43,9 @@ class VaultAccountResponse(BaseModel):
     name: str = Field(..., description="The name of the vault account")
     hidden_on_ui: Optional[bool] = Field(None, description="Whether the vault account is hidden in the UI")
     auto_fuel: Optional[bool] = Field(None, description="Whether automatic fueling is enabled")
+    customer_ref_id: Optional[str] = Field(None, description="Customer reference ID")
+    assets: Optional[list[VaultAssetInAccount]] = Field(None, description="Assets in the vault account")
+    tags: Optional[Dict[str, Any]] = Field(None, description="Tags associated with the vault account")
 
     class Config:
         from_attributes = True
