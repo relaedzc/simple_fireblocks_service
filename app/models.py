@@ -174,6 +174,25 @@ class TokenResponse(BaseModel):
         from_attributes = True
 
 
+class VaultAccountsQueryParams(BaseModel):
+    """Query parameters for getting paginated vault accounts"""
+    namePrefix: Optional[str] = Field(None, description="Filter by name prefix")
+    nameSuffix: Optional[str] = Field(None, description="Filter by name suffix")
+    minAmountThreshold: Optional[float] = Field(None, description="Minimum amount threshold")
+    assetId: Optional[str] = Field(None, description="Filter by asset ID")
+    orderBy: Optional[str] = Field(None, description="Order by field")
+    before: Optional[str] = Field(None, description="Pagination cursor (before)")
+    after: Optional[str] = Field(None, description="Pagination cursor (after)")
+    limit: Optional[int] = Field(100, description="Results per page", ge=1, le=500)
+
+
+class VaultAssetAddressesQueryParams(BaseModel):
+    """Query parameters for getting vault account asset addresses"""
+    before: Optional[str] = Field(None, description="Pagination cursor (before)")
+    after: Optional[str] = Field(None, description="Pagination cursor (after)")
+    limit: Optional[int] = Field(100, description="Results per page", ge=1, le=500)
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
 
