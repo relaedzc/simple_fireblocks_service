@@ -1,12 +1,74 @@
 """Vault account management endpoints"""
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, Query, status
+from typing import Optional
 from fireblocks.client import Fireblocks
 from fireblocks.models.create_vault_account_request import CreateVaultAccountRequest as FBCreateVaultAccountRequest
 
 from app.models import CreateVaultAccountRequest, VaultAccountResponse, VaultAssetInAccount
 from app.fireblocks_client import get_fireblocks_client
+import logging
 
 router = APIRouter(prefix="/vault-accounts", tags=["Vault Accounts"])
+logger = logging.getLogger(__name__)
+
+
+@router.get(
+    "",
+    status_code=status.HTTP_200_OK,
+    summary="Get paginated vault accounts",
+    description="Retrieves vault accounts with filtering and pagination support"
+)
+async def get_paged_vault_accounts(
+    namePrefix: Optional[str] = Query(None, description="Filter by name prefix"),
+    nameSuffix: Optional[str] = Query(None, description="Filter by name suffix"),
+    minAmountThreshold: Optional[float] = Query(None, description="Minimum amount threshold"),
+    assetId: Optional[str] = Query(None, description="Filter by asset ID"),
+    orderBy: Optional[str] = Query(None, description="Order by field"),
+    before: Optional[str] = Query(None, description="Pagination cursor (before)"),
+    after: Optional[str] = Query(None, description="Pagination cursor (after)"),
+    limit: Optional[int] = Query(100, ge=1, le=500, description="Results per page"),
+    fireblocks: Fireblocks = Depends(get_fireblocks_client)
+):
+    """
+    Get paginated vault accounts with filtering.
+
+    This endpoint returns a limited amount of results with a quick response time.
+    Supports filtering by name prefix/suffix, asset, amount threshold.
+    """
+    try:
+        # Build params dict (remove None values)
+        params = {
+            "name_prefix": namePrefix,
+            "name_suffix": nameSuffix,
+            "min_amount_threshold": minAmountThreshold,
+            "asset_id": assetId,
+            "order_by": orderBy,
+            "before": before,
+            "after": after,
+            "limit": limit,
+        }
+
+        # Remove None values
+        params = {k: v for k, v in params.items() if v is not None}
+
+        logger.info(f"Fetching vault accounts with params: {params}")
+
+        # Call Fireblocks SDK
+        # Note: Using get_paged_vault_accounts for pagination support
+        api_response = fireblocks.vaults.get_paged_vault_accounts(**params).result()
+
+        # Return response in expected format
+        return {
+            "data": api_response.data,
+            "statusCode": 200
+        }
+
+    except Exception as e:
+        logger.error(f"Error fetching vault accounts: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch vault accounts: {str(e)}"
+        )
 
 
 @router.get(
